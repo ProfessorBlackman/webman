@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "webman"
+version = "0.1.0"
+description = ""
+authors = ["Methuselah-Nwodobeh <methuselah.nwodobeh@amalitech.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+uvicorn = "^0.32.1"
+beautifulsoup4 = "^4.12.3"
+pyppeteer = "^2.0.0"
+celery = "^5.4.0"
+redis = "^5.2.0"
+sqlalchemy = "^2.0.36"
+psycopg2-binary = "^2.9.10"
+python-multipart = "^0.0.19"
+requests = "^2.32.3"
+python-dotenv = "^1.0.1"
+flower = "^2.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
