@@ -1,15 +1,14 @@
 from celery import Celery
 
-from config import Config
+from config import settings
 
 
 def make_celery(app=None):
     celery = Celery(
-        app.import_name,
-        broker=Config.CELERY_BROKER_URL,
-        backend=Config.CELERY_RESULT_BACKEND
+        app,
+        broker=settings.CELERY_BROKER_URL,
+        backend=settings.CELERY_RESULT_BACKEND
     )
-    celery.conf.update(app.config)
 
     # Celery worker configurations to manage task visibility, retries, memory leaks, and shutdown behavior
     celery.conf.update(
