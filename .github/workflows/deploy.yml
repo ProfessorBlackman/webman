@@ -1,0 +1,91 @@
+#name: CI/CD Pipeline
+#
+#on:
+#  push:
+#    branches: [ main ]
+#  pull_request:
+#    branches: [ main ]
+#
+#jobs:
+#  test-and-lint:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#    - uses: actions/checkout@v3
+#
+#    - name: Set up Python
+#      uses: actions/setup-python@v4
+#      with:
+#        python-version: '3.11'
+#
+#    - name: Install Poetry
+#      run: |
+#        curl -sSL https://install.python-poetry.org | python3 -
+#
+#    - name: Install Dependencies
+#      run: poetry install
+#
+#    - name: Run Tests
+#      run: poetry run pytest
+#
+#    - name: Run Flake8
+#      run: poetry run flake8
+#
+#    - name: Run Black
+#      run: poetry run black . --check
+#
+#    - name: Run isort
+#      run: poetry run isort . --check-only
+#
+#    - name: Run mypy
+#      run: poetry run mypy .
+#
+#  deploy:
+#    needs: test-and-lint
+#    runs-on: ubuntu-latest
+#    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+#
+#    steps:
+#    - uses: actions/checkout@v3
+#
+#    - name: Configure AWS credentials
+#      uses: aws-actions/configure-aws-credentials@v1
+#      with:
+#        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#        aws-region: ${{ secrets.AWS_REGION }}
+#
+#    - name: Login to Amazon ECR
+#      id: login-ecr
+#      uses: aws-actions/amazon-ecr-login@v1
+#
+#    - name: Build and push Docker image
+#      env:
+#        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+#        IMAGE_TAG: ${{ github.sha }}
+#      run: |
+#        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+#        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+#
+#    - name: Deploy to EC2
+#      uses: appleboy/ssh-action@master
+#      with:
+#        host: ${{ secrets.EC2_HOST }}
+#        username: ${{ secrets.EC2_USERNAME }}
+#        key: ${{ secrets.EC2_SSH_KEY }}
+#        script: |
+#          # Pull the latest image
+#          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+#          docker pull ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
+#
+#          # Stop and remove the old container if it exists
+#          docker stop fastapi-app || true
+#          docker rm fastapi-app || true
+#
+#          # Run the new container
+#          docker run -d \
+#            --name fastapi-app \
+#            -p 8000:8000 \
+#            --restart always \
+#            ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
