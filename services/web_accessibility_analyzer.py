@@ -1,7 +1,7 @@
+from typing import Dict, List
+
 import requests
 from bs4 import BeautifulSoup
-from typing import Dict, List, Tuple
-import re
 
 from dtos.responses.accessibility_response import AccessibilityAnalysisResult
 
@@ -163,7 +163,7 @@ class WebAccessibilityAnalyzer:
                     })
         return issues
 
-    def analyze(self) -> Dict:
+    def analyze(self) -> AccessibilityAnalysisResult | dict:
         """Performs complete accessibility analysis"""
         print(f"Analyzing accessibility for: {self.url}")
         if not self.load_page():

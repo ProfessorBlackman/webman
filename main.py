@@ -5,10 +5,10 @@ from dtos.requests.website_analysis import WebsiteAnalysisRequest
 from dtos.responses.accessibility_response import AccessibilityAnalysisResult
 from dtos.responses.performance_response import WebVitalsResult
 from dtos.responses.responsiveness_response import WebpageResponsivenessReport
-from log_management.logging_config import setup_logging
+from log_management.logging_config import setup_logging, main_logger
 from services.performance_analyzer import WebPageAnalyzer
 from services.responsiveness_analyzer import WebpageResponsivenessAnalyzer
-from services.url_validator import validate_url
+from services.validators import validate_url
 from services.web_accessibility_analyzer import WebAccessibilityAnalyzer
 
 app = FastAPI(
@@ -104,6 +104,7 @@ async def analyze_responsiveness(request: WebsiteAnalysisRequest):
 
         return mobile_friendly_results
     except Exception as e:
+        main_logger.error(e)
         raise HTTPException(status_code=500, detail=f"Mobile friendliness analysis failed: {str(e)}")
 
 

@@ -18,6 +18,8 @@ requests = "^2.32.3"
 python-dotenv = "^1.0.1"
 flower = "^2.0.1"
 selenium = "^4.27.1"
+pytest = "^8.3.4"
+pytest-mock = "^3.14.0"
 
 
 [build-system]

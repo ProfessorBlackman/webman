@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from urllib.parse import urlparse
 
 
@@ -34,3 +35,10 @@ def validate_url(url: str) -> str:
 
     except Exception:
         raise ValueError("Invalid URL format")
+
+def validate_timestamp(timestamp: str, format: str = "%Y-%m-%d %H:%M:%S") -> bool:
+    try:
+        datetime.strptime(timestamp, format)
+        return True
+    except ValueError:
+        return False

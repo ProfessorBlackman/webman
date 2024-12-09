@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from dtos.responses.responsiveness_response import WebpageResponsivenessReport
+from log_management.logging_config import responsiveness_logger
 
 
 class WebpageResponsivenessAnalyzer:
@@ -15,21 +16,30 @@ class WebpageResponsivenessAnalyzer:
         self.chrome_options = Options()
         self.chrome_options.add_argument('--headless')
         self.results = {}
+        self.logger = responsiveness_logger
 
     def start_analysis(self):
         """Initialize the analysis process"""
-        self.driver = webdriver.Chrome(options=self.chrome_options)
-        self.driver.get(self.url)
+        try:
+            self.driver = webdriver.Chrome(options=self.chrome_options)
+            self.driver.get(self.url)
+        except Exception as e:
+            self.logger.error(f"Error initializing analysis: {str(e)}")
+            raise e
 
     def check_load_time(self):
         """Measure initial page load time"""
-        time.time()
-        self.driver.get(self.url)
-        navigation_start = self.driver.execute_script("return window.performance.timing.navigationStart")
-        response_end = self.driver.execute_script("return window.performance.timing.responseEnd")
-        page_load_time = response_end - navigation_start
-        self.results['load_time'] = page_load_time
-        return page_load_time
+        try:
+            time.time()
+            self.driver.get(self.url)
+            navigation_start = self.driver.execute_script("return window.performance.timing.navigationStart")
+            response_end = self.driver.execute_script("return window.performance.timing.responseEnd")
+            page_load_time = response_end - navigation_start
+            self.results['load_time'] = page_load_time
+            return page_load_time
+        except Exception as e:
+            self.logger.error(f"Error measuring load time: {str(e)}")
+            raise e
 
     def check_viewport_sizes(self):
         """Test page rendering at different viewport sizes"""
@@ -41,43 +51,51 @@ class WebpageResponsivenessAnalyzer:
         ]
 
         viewport_results = {}
-        for width, height in viewport_sizes:
-            self.driver.set_window_size(width, height)
-            time.sleep(1)  # Allow page to adjust
+        try:
+            for width, height in viewport_sizes:
+                self.driver.set_window_size(width, height)
+                time.sleep(1)  # Allow page to adjust
 
-            # Check for horizontal scrollbar
-            has_horizontal_scroll = self.driver.execute_script(
-                "return document.documentElement.scrollWidth > document.documentElement.clientWidth"
-            )
+                # Check for horizontal scrollbar
+                has_horizontal_scroll = self.driver.execute_script(
+                    "return document.documentElement.scrollWidth > document.documentElement.clientWidth"
+                )
 
-            # Check if elements maintain proper layout
-            elements_overflow = self.driver.execute_script(
-                "return Array.from(document.getElementsByTagName('*')).some(el => el.offsetWidth > window.innerWidth)"
-            )
+                # Check if elements maintain proper layout
+                elements_overflow = self.driver.execute_script(
+                    "return Array.from(document.getElementsByTagName('*')).some(el => el.offsetWidth > window.innerWidth)"
+                )
 
-            viewport_results[f"{width}x{height}"] = {
-                "has_horizontal_scroll": has_horizontal_scroll,
-                "elements_overflow": elements_overflow
-            }
+                viewport_results[f"{width}x{height}"] = {
+                    "has_horizontal_scroll": has_horizontal_scroll,
+                    "elements_overflow": elements_overflow
+                }
 
-        self.results['viewport_tests'] = viewport_results
-        return viewport_results
+            self.results['viewport_tests'] = viewport_results
+            return viewport_results
+        except Exception as e:
+            self.logger.error(f"Error testing viewport sizes: {str(e)}")
+            raise e
 
     def check_resource_loading(self):
         """Analyze resource loading performance"""
-        performance_timing = self.driver.execute_script(
-            "return window.performance.getEntriesByType('resource')"
-        )
+        try:
+            performance_timing = self.driver.execute_script(
+                "return window.performance.getEntriesByType('resource')"
+            )
 
-        resource_times = {}
-        for entry in performance_timing:
-            resource_times[entry['name']] = {
-                'duration': entry['duration'],
-                'size': entry['transferSize'] if 'transferSize' in entry else 0
-            }
+            resource_times = {}
+            for entry in performance_timing:
+                resource_times[entry['name']] = {
+                    'duration': entry['duration'],
+                    'size': entry['transferSize'] if 'transferSize' in entry else 0
+                }
 
-        self.results['resource_loading'] = resource_times
-        return resource_times
+            self.results['resource_loading'] = resource_times
+            return resource_times
+        except Exception as e:
+            self.logger.error(f"Error analyzing resource loading: {str(e)}")
+            raise e
 
     def check_interactive_elements(self):
         """Test responsiveness of interactive elements"""
@@ -102,7 +120,8 @@ class WebpageResponsivenessAnalyzer:
                     "visible": is_visible,
                     "clickable": is_clickable
                 }
-            except:
+            except Exception as e:
+                self.logger.warning(f"Error testing element {element}: {str(e)}")
                 continue
 
         self.results['interactive_elements'] = interactive_results

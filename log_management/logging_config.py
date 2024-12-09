@@ -194,7 +194,22 @@ loggers = {
         'log_management',
         'logs/log_management.log',
         level=LOG_LEVEL
-    )
+    ),
+'performance': setup_logger(
+        'performance_logger',
+        'logs/performance.log',
+        level=LOG_LEVEL
+    ),
+'responsiveness': setup_logger(
+        'responsiveness_logger',
+        'logs/responsiveness.log',
+        level=LOG_LEVEL
+    ),
+'accessibility': setup_logger(
+        'accessibility_logger',
+        'logs/accessibility.log',
+        level=LOG_LEVEL
+    ),
 }
 
 
@@ -209,9 +224,11 @@ def log_with_context(logger: Logger, level: str, message: str, **extra):
 main_logger = loggers['main']
 db_logger = loggers['db']
 email_logger = loggers['email']
-access_logger = loggers['access']
 request_logger = loggers['request']
 log_management_logger = loggers['log_management']
+accessibility_logger = loggers['accessibility']
+responsiveness_logger = loggers['responsiveness']
+performance_logger = loggers['performance']
 
 # Example usage in a FastAPI app
 from fastapi import FastAPI
