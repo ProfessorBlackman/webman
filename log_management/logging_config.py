@@ -1,17 +1,17 @@
 import json
 import logging
+import os
+import traceback
+from datetime import datetime, timezone
 from logging import Logger
 from logging.handlers import RotatingFileHandler
-import os
-from datetime import datetime, timezone
 from typing import Any, Dict, Optional
-import traceback
 
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request as StarletteRequest
 
-from config import Config, settings
+from config import settings
 
 
 class JsonFormatter(logging.Formatter):
