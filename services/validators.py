@@ -31,7 +31,7 @@ def validate_url(url: str) -> str:
             raise ValueError("Invalid URL")
 
         # Reconstruct normalized URL
-        return f"{parsed_url.scheme}://{parsed_url.netloc}"
+        return f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}"
 
     except Exception:
         raise ValueError("Invalid URL format")
