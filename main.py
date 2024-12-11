@@ -19,7 +19,7 @@ app = FastAPI(
 # Define allowed origins
 origins = [
     "http://localhost:5173",
-    "https://webman-frontend.vercel.app/",
+    "https://webman-frontend.vercel.app",
     # Add more origins as needed
 ]
 
