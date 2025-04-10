@@ -22,7 +22,7 @@ class Results(BaseModel):
 class WebpageResponsivenessReport(BaseModel):
     url: str
     timestamp: str
-    results: Dict[str, Any]
+    results: Results
 
     @staticmethod
     def from_dict(data: Dict[str, Any]) -> 'WebpageResponsivenessReport':

@@ -3,7 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="Poetry (webman)" />
   </component>
-  <component name="GithubDefaultAccount">
-    <option name="defaultAccountId" value="b569330a-0d79-49d7-b68a-6a295a943d50" />
-  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Poetry (webman) (2)" project-jdk-type="Python SDK" />
 </project>
