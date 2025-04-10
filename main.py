@@ -21,6 +21,7 @@ origins = [
     "http://localhost:5173",
     "http://localhost:8080",
     "https://webman-frontend.vercel.app",
+    "https://web-wizard-insights.vercel.app/"
     # Add more origins as needed
 ]
 
